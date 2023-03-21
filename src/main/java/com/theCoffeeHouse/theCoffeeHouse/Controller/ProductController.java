@@ -1,0 +1,107 @@
+package com.theCoffeeHouse.theCoffeeHouse.Controller;
+
+import com.theCoffeeHouse.theCoffeeHouse.Models.Product;
+import com.theCoffeeHouse.theCoffeeHouse.Models.ResponseObject;
+import com.theCoffeeHouse.theCoffeeHouse.Repositories.ProductRepository;
+import org.apache.catalina.connector.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping(path = "/api/v1/products")
+@CrossOrigin
+public class ProductController {
+    @Autowired
+    private ProductRepository repository;
+
+    @GetMapping("")
+    List<Product> getAllProducts() {
+        return repository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    ResponseEntity<ResponseObject> getProductById(@PathVariable Long id) {
+        Optional<Product> foundProduct = repository.findById(id);
+        return foundProduct.isPresent() ?
+                ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponseObject("ok", "Query product successfully", foundProduct)) :
+                ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        new ResponseObject("failed", "Cannot find product with id = " + id, "")
+                );
+    }
+
+    @PostMapping("/add")
+    ResponseEntity<ResponseObject> addProduct(@RequestBody Product newProduct) {
+        List<Product> foundProducts = repository.findByName(newProduct.getName().trim());
+        if (foundProducts.size() > 0) {
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
+                    new ResponseObject("failed", "Product name already exist", "")
+            );
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("ok", "Add a new product successfully", repository.save((newProduct)))
+        );
+    }
+
+    @PutMapping("/{id}")
+    ResponseEntity<ResponseObject> updateProduct(@RequestBody Product newProduct, @PathVariable Long id) {
+        List<Product> foundProducts = repository.findByName(newProduct.getName().trim());
+        Product foundProduct = repository.findById(id).orElseGet(() -> {
+            return new Product("", 0L, "", "", "");
+        });
+        if (foundProducts.get(0).getId() != id && newProduct.getName().trim().compareTo(foundProduct.getName()) == 0) {
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
+                    new ResponseObject("failed", "Product name already exist", "")
+            );
+        }
+        Product updateProduct = repository.findById(id).map(product -> {
+            product.setName(newProduct.getName());
+            product.setCategoryId(newProduct.getCategoryId());
+            product.setPrice(newProduct.getPrice());
+            product.setImage(newProduct.getImage());
+            product.setDescription(newProduct.getDescription());
+            return repository.save(product);
+        }).orElseGet(() -> {
+            newProduct.setId(id);
+            return repository.save(newProduct);
+        });
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("ok", "Updated product successfully", updateProduct)
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<ResponseObject> deleteProduct(@PathVariable Long id) {
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("ok", "Deleted product successfully", ""));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ResponseObject("failed", "Cannot find product to delete", "")
+        );
+    }
+
+    @DeleteMapping("/")
+    ResponseEntity<ResponseObject> deleteMultipleProduct(@RequestBody String[] arrayId) {
+        int count = 0;
+        for (String id : arrayId) {
+            if (repository.existsById(Long.parseLong(id))) {
+                repository.deleteById(Long.parseLong(id));
+                count++;
+            }
+        }
+        if (count == arrayId.length) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("ok", "Deleted product successfully", ""));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ResponseObject("failed", "Cannot find product to delete", "")
+        );
+    }
+}
