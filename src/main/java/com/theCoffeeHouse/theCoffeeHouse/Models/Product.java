@@ -6,11 +6,11 @@ import jakarta.persistence.*;
 @Table(name = "tbProduct")
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false, unique = true, length = 3000)
     private String name;
-    private Long categoryId;
+    private Long detailedCategoryId;
     private String price;
     @Column(columnDefinition = "LONGTEXT")
     private String image;
@@ -19,9 +19,9 @@ public class Product {
     public Product() {
     }
 
-    public Product(String name, Long categoryId, String price, String image, String description) {
+    public Product(String name, Long detailedCategoryId, String price, String image, String description) {
         this.name = name;
-        this.categoryId = categoryId;
+        this.detailedCategoryId = detailedCategoryId;
         this.price = price;
         this.image = image;
         this.description = description;
@@ -43,12 +43,12 @@ public class Product {
         this.name = name;
     }
 
-    public Long getCategoryId() {
-        return categoryId;
+    public Long getDetailedCategoryId() {
+        return detailedCategoryId;
     }
 
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
+    public void setDetailedCategoryId(Long detailedCategoryId) {
+        this.detailedCategoryId = detailedCategoryId;
     }
 
     public String getPrice() {

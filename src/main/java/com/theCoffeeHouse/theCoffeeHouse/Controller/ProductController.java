@@ -3,7 +3,6 @@ package com.theCoffeeHouse.theCoffeeHouse.Controller;
 import com.theCoffeeHouse.theCoffeeHouse.Models.Product;
 import com.theCoffeeHouse.theCoffeeHouse.Models.ResponseObject;
 import com.theCoffeeHouse.theCoffeeHouse.Repositories.ProductRepository;
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +18,12 @@ public class ProductController {
     @Autowired
     private ProductRepository repository;
 
-    @GetMapping("")
+    @GetMapping("/getAll")
     List<Product> getAllProducts() {
         return repository.findAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/getById/{id}")
     ResponseEntity<ResponseObject> getProductById(@PathVariable Long id) {
         Optional<Product> foundProduct = repository.findById(id);
         return foundProduct.isPresent() ?
@@ -48,20 +47,22 @@ public class ProductController {
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     ResponseEntity<ResponseObject> updateProduct(@RequestBody Product newProduct, @PathVariable Long id) {
         List<Product> foundProducts = repository.findByName(newProduct.getName().trim());
         Product foundProduct = repository.findById(id).orElseGet(() -> {
             return new Product("", 0L, "", "", "");
         });
-        if (foundProducts.get(0).getId() != id && newProduct.getName().trim().compareTo(foundProduct.getName()) == 0) {
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
-                    new ResponseObject("failed", "Product name already exist", "")
-            );
+        if (foundProducts.size() > 0) {
+            if (foundProducts.get(0).getId() != id && newProduct.getName().trim().compareTo(foundProduct.getName()) == 0) {
+                return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
+                        new ResponseObject("failed", "Product name already exist", "")
+                );
+            }
         }
         Product updateProduct = repository.findById(id).map(product -> {
             product.setName(newProduct.getName());
-            product.setCategoryId(newProduct.getCategoryId());
+            product.setDetailedCategoryId(newProduct.getDetailedCategoryId());
             product.setPrice(newProduct.getPrice());
             product.setImage(newProduct.getImage());
             product.setDescription(newProduct.getDescription());
@@ -75,7 +76,7 @@ public class ProductController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/deleteById/{id}")
     ResponseEntity<ResponseObject> deleteProduct(@PathVariable Long id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
@@ -87,9 +88,15 @@ public class ProductController {
         );
     }
 
-    @DeleteMapping("/")
+    @PutMapping("/deleteMultiple")
     ResponseEntity<ResponseObject> deleteMultipleProduct(@RequestBody String[] arrayId) {
         int count = 0;
+
+        if (arrayId.length < 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject("failed", "Delete id is empty!", "")
+            );
+        }
         for (String id : arrayId) {
             if (repository.existsById(Long.parseLong(id))) {
                 repository.deleteById(Long.parseLong(id));
