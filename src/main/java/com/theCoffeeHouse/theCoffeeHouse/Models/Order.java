@@ -10,36 +10,36 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String customerName;
+    private String deliveryAddress;
     private String phoneNumber;
-    private String address;
     private String totalMoney;
-    private String dateTime;
-    private String paymentMethods;
+    private String day;
+    private String month;
+    private String year;
+    private String time;
     @Value("${status: Đang chuẩn bị đơn hàng}")
     private String status;
-    @Value("${status: Chưa thanh toán}")
-    private String isPaid;
 
     public Order() {
     }
 
-    public Order(String customerName, String phoneNumber, String address, String totalMoney, String dateTime, String paymentMethods, String status, String isPaid) {
+    public Order(String customerName, String deliveryAddress, String phoneNumber, String totalMoney, String day, String month, String year, String time) {
         this.customerName = customerName;
+        this.deliveryAddress = deliveryAddress;
         this.phoneNumber = phoneNumber;
-        this.address = address;
         this.totalMoney = totalMoney;
-        this.dateTime = dateTime;
-        this.paymentMethods = paymentMethods;
-        this.status = status;
-        this.isPaid = isPaid;
+        this.day = day;
+        this.month = month;
+        this.year = year;
+        this.time = time;
     }
 
-    public Long getId() {
-        return id;
+    public String getTime() {
+        return time;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public String getCustomerName() {
@@ -50,6 +50,14 @@ public class Order {
         this.customerName = customerName;
     }
 
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -58,12 +66,12 @@ public class Order {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getAddress() {
-        return address;
+    public Long getId() {
+        return id;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTotalMoney() {
@@ -74,22 +82,6 @@ public class Order {
         this.totalMoney = totalMoney;
     }
 
-    public String getDateTime() {
-        return dateTime;
-    }
-
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public String getPaymentMethods() {
-        return paymentMethods;
-    }
-
-    public void setPaymentMethods(String paymentMethods) {
-        this.paymentMethods = paymentMethods;
-    }
-
     public String getStatus() {
         return status;
     }
@@ -98,11 +90,27 @@ public class Order {
         this.status = status;
     }
 
-    public String getIsPaid() {
-        return isPaid;
+    public String getDay() {
+        return day;
     }
 
-    public void setIsPaid(String isPaid) {
-        this.isPaid = isPaid;
+    public void setDay(String day) {
+        this.day = day;
+    }
+
+    public String getMonth() {
+        return month;
+    }
+
+    public void setMonth(String month) {
+        this.month = month;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
     }
 }

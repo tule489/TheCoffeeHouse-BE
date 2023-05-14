@@ -111,4 +111,57 @@ public class ProductController {
                 new ResponseObject("failed", "Cannot find product to delete", "")
         );
     }
+
+    @PostMapping("/setTrueHotProduct")
+    ResponseEntity<ResponseObject> setTrueHotProduct(@RequestBody String[] arrayId) {
+        int count = 0;
+
+        if (arrayId.length < 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject("failed", "Product id is empty!", "")
+            );
+        }
+        for (String id : arrayId) {
+            if (repository.existsById(Long.parseLong(id))) {
+                repository.setTrueHotProduct(Long.parseLong(id));
+                count++;
+            }
+        }
+        if (count == arrayId.length) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("ok", "Set product successfully", ""));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ResponseObject("failed", "Cannot find product", "")
+        );
+    }
+
+    @PostMapping("/setFalseHotProduct")
+    ResponseEntity<ResponseObject> setFalseHotProduct(@RequestBody String[] arrayId) {
+        int count = 0;
+
+        if (arrayId.length < 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject("failed", "Product id is empty!", "")
+            );
+        }
+        for (String id : arrayId) {
+            if (repository.existsById(Long.parseLong(id))) {
+                repository.setFalseHotProduct(Long.parseLong(id));
+                count++;
+            }
+        }
+        if (count == arrayId.length) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("ok", "Set product successfully", ""));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ResponseObject("failed", "Cannot find product", "")
+        );
+    }
+
+    @GetMapping("/getHotProduct")
+    List<Product> getHotProduct() {
+        return repository.getHotProduct();
+    }
 }

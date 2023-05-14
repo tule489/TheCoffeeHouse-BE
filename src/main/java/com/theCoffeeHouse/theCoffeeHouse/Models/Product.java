@@ -1,6 +1,7 @@
 package com.theCoffeeHouse.theCoffeeHouse.Models;
 
 import jakarta.persistence.*;
+import org.springframework.beans.factory.annotation.Value;
 
 @Entity
 @Table(name = "tbProduct")
@@ -15,7 +16,8 @@ public class Product {
     @Column(columnDefinition = "LONGTEXT")
     private String image;
     private String description;
-
+    @Column(nullable = false, columnDefinition = "default '0'")
+    private String isHotProduct;
     public Product() {
     }
 
@@ -25,6 +27,14 @@ public class Product {
         this.price = price;
         this.image = image;
         this.description = description;
+    }
+
+    public String getIsHotProduct() {
+        return isHotProduct;
+    }
+
+    public void setIsHotProduct(String isHotProduct) {
+        this.isHotProduct = isHotProduct;
     }
 
     public Long getId() {
