@@ -1,9 +1,6 @@
 package com.theCoffeeHouse.theCoffeeHouse.Controller;
 
-import com.theCoffeeHouse.theCoffeeHouse.Models.Order;
-import com.theCoffeeHouse.theCoffeeHouse.Models.OrderByDay;
-import com.theCoffeeHouse.theCoffeeHouse.Models.OrderDetails;
-import com.theCoffeeHouse.theCoffeeHouse.Models.ResponseObject;
+import com.theCoffeeHouse.theCoffeeHouse.Models.*;
 import com.theCoffeeHouse.theCoffeeHouse.Repositories.OrderDetailsRepository;
 import com.theCoffeeHouse.theCoffeeHouse.Repositories.OrderRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -111,17 +108,17 @@ public class PaymentController {
         );
     }
 
-    @GetMapping("/getOrderByMonth/{month}")
+    @GetMapping("/getOrderByMonth/{year}")
     ResponseEntity<ResponseObject> getOrderByMonth( @PathVariable String year) {
-        Object[] objects = repository.getOrderByDay(year);
-        List<OrderByDay> orderByDays = Arrays.stream(objects).map(
+        Object[] objects = repository.getOrderByMonth(year);
+        List<OrderByMonth> orderByMonths = Arrays.stream(objects).map(
                 data -> {
                     Object[] arr = (Object[]) data;
-                    return new OrderByDay((String) arr[0], ((BigDecimal) arr[1]).doubleValue());
+                    return new OrderByMonth((String) arr[0], ((BigDecimal) arr[1]).doubleValue());
                 }
         ).toList();
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("ok", "Get data successfully", orderByDays)
+                new ResponseObject("ok", "Get data successfully", orderByMonths)
         );
     }
 }

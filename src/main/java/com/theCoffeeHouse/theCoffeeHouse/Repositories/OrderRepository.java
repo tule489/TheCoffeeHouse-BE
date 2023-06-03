@@ -18,11 +18,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Transactional
     @Modifying
-    @Query("SELECT order.day as day, sum(order.totalMoney) as totalMoney FROM Order order WHERE order.month = ?1 GROUP BY order.day order by day")
+    @Query("SELECT order.day as day, sum(order.totalMoney) as totalMoney FROM Order order WHERE order.month = ?1 GROUP BY order.day ORDER BY day")
     Object[] getOrderByDay(String month);
 
     @Transactional
     @Modifying
-    @Query("SELECT order.month as month, sum(order.totalMoney) as totalMoney FROM Order order WHERE order.year = ?1 GROUP BY order.month order by month")
+    @Query("SELECT order.month as month, sum(order.totalMoney) as totalMoney FROM Order order WHERE order.year = ?1 GROUP BY order.month ORDER BY month")
     Object[] getOrderByMonth(String year);
 }
