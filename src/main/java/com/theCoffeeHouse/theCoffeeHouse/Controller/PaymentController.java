@@ -95,7 +95,7 @@ public class PaymentController {
     }
 
     @GetMapping("/getOrderByDay/{month}")
-    ResponseEntity<ResponseObject> getOrderByDay( @PathVariable String month) {
+    ResponseEntity<ResponseObject> getOrderByDay(@PathVariable String month) {
         Object[] objects = repository.getOrderByDay(month);
         List<OrderByDay> orderByDays = Arrays.stream(objects).map(
                 data -> {
@@ -109,7 +109,7 @@ public class PaymentController {
     }
 
     @GetMapping("/getOrderByMonth/{year}")
-    ResponseEntity<ResponseObject> getOrderByMonth( @PathVariable String year) {
+    ResponseEntity<ResponseObject> getOrderByMonth(@PathVariable String year) {
         Object[] objects = repository.getOrderByMonth(year);
         List<OrderByMonth> orderByMonths = Arrays.stream(objects).map(
                 data -> {
