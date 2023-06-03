@@ -1,6 +1,7 @@
 package com.theCoffeeHouse.theCoffeeHouse.Controller;
 
 import com.theCoffeeHouse.theCoffeeHouse.Models.Order;
+import com.theCoffeeHouse.theCoffeeHouse.Models.OrderByDay;
 import com.theCoffeeHouse.theCoffeeHouse.Models.OrderDetails;
 import com.theCoffeeHouse.theCoffeeHouse.Models.ResponseObject;
 import com.theCoffeeHouse.theCoffeeHouse.Repositories.OrderDetailsRepository;
@@ -11,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 @RestController
 @RequestMapping(path = "/api/v1/orders")
@@ -91,6 +94,34 @@ public class PaymentController {
         repository.updateStatus(newStatus.substring(1, newStatus.length() -1), orderId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("ok", "Update status successfully", "" )
+        );
+    }
+
+    @GetMapping("/getOrderByDay/{month}")
+    ResponseEntity<ResponseObject> getOrderByDay( @PathVariable String month) {
+        Object[] objects = repository.getOrderByDay(month);
+        List<OrderByDay> orderByDays = Arrays.stream(objects).map(
+                data -> {
+                    Object[] arr = (Object[]) data;
+                    return new OrderByDay((String) arr[0], ((BigDecimal) arr[1]).doubleValue());
+                }
+        ).toList();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("ok", "Get data successfully", orderByDays)
+        );
+    }
+
+    @GetMapping("/getOrderByMonth/{month}")
+    ResponseEntity<ResponseObject> getOrderByMonth( @PathVariable String year) {
+        Object[] objects = repository.getOrderByDay(year);
+        List<OrderByDay> orderByDays = Arrays.stream(objects).map(
+                data -> {
+                    Object[] arr = (Object[]) data;
+                    return new OrderByDay((String) arr[0], ((BigDecimal) arr[1]).doubleValue());
+                }
+        ).toList();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("ok", "Get data successfully", orderByDays)
         );
     }
 }

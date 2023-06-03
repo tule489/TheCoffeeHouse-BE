@@ -1,10 +1,14 @@
 package com.theCoffeeHouse.theCoffeeHouse.Models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.beans.factory.annotation.Value;
 
 @Entity
 @Table(name = "tbOrder")
+@DynamicInsert
+@DynamicUpdate
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

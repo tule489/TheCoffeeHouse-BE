@@ -16,8 +16,8 @@ public class Product {
     @Column(columnDefinition = "LONGTEXT")
     private String image;
     private String description;
-    @Column(nullable = false, columnDefinition = "default '0'")
-    private String isHotProduct;
+    @Column(nullable = false)
+    private String isHotProduct = "0";
     public Product() {
     }
 
