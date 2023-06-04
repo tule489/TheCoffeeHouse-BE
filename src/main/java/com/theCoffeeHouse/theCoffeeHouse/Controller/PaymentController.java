@@ -33,17 +33,17 @@ public class PaymentController {
         );
     }
 
-    @PostMapping("/addOrderDetails")
-    ResponseEntity<ResponseObject> addOrderDetails(@RequestBody String[] arrayProductId, @RequestParam String orderId, HttpServletRequest request) {
+    @PostMapping("/addOrderDetails/{orderId}")
+    ResponseEntity<ResponseObject> addOrderDetails(@RequestBody String[] arrayProductId, @PathVariable String orderId) {
         int count = 0;
 
         if (arrayProductId.length < 0) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseObject("failed", "Delete id is empty!", "")
+                    new ResponseObject("failed", "List product id is empty!", "")
             );
         }
         for (String productId : arrayProductId) {
-            orderDetailsRepository.save(new OrderDetails(Long.parseLong(orderId), Long.parseLong(productId), request.getHeader("User-Agent")));
+            orderDetailsRepository.save(new OrderDetails(Long.parseLong(orderId), Long.parseLong(productId)));
         }
         if (count == arrayProductId.length) {
             return ResponseEntity.status(HttpStatus.OK).body(

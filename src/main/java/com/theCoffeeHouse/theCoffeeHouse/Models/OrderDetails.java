@@ -14,7 +14,7 @@ public class OrderDetails {
     public OrderDetails() {
     }
 
-    public OrderDetails(Long orderId, Long productId, String userAgent) {
+    public OrderDetails(Long orderId, Long productId) {
         this.orderId = orderId;
         this.productId = productId;
     }
