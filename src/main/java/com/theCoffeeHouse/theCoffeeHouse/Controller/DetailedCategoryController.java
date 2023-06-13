@@ -42,7 +42,7 @@ public class DetailedCategoryController {
     ResponseEntity<ResponseObject> addDetailCategory(@RequestBody DetailedCategory newDetailedCategory) {
         List<DetailedCategory> foundDetailedCategory = repository.findByName(newDetailedCategory.getName().trim());
         if (foundDetailedCategory.size() > 0) {
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     new ResponseObject("failed", "Detailed category name already exist", "")
             );
         }
@@ -59,7 +59,7 @@ public class DetailedCategoryController {
         });
         if (foundDetailCategories.size() > 0) {
             if (foundDetailCategories.get(0).getId() != id && newDetailedCategory.getName().trim().compareTo(foundDetailedCategory.getName()) == 0) {
-                return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                         new ResponseObject("failed", "Product name already exist", "")
                 );
             }
@@ -84,12 +84,12 @@ public class DetailedCategoryController {
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject("ok", "Deleted detailed category successfully", repository.findAll()));
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ResponseObject("failed", "Cannot find detailed category to delete", "")
         );
     }
 
-    @PutMapping("/deleteMultiple")
+    @PostMapping("/deleteMultiple")
     ResponseEntity<ResponseObject> deleteMultipleDetailedCategory(@RequestBody String[] arrayId) {
         int count = 0;
         if (arrayId.length < 0) {

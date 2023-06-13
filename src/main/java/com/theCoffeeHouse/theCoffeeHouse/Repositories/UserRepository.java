@@ -13,11 +13,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByUsername(String username);
     @Modifying
     @Transactional
-    @Query("Update User user set user.password = :newPassword where user.id = :userId")
-    void changePassword(@Param("userId") Long userId, @Param("newPassword") String newPassword);
+    @Query("Update User user set user.password = :newPassword where user.username = :username")
+    void changePassword(@Param("username") String username, @Param("newPassword") String newPassword);
 
     @Modifying
     @Transactional
-    @Query("Select user from User user where user.username != 'admin'")
-    List<User> getAllAccount();
+    @Query("Select user from User user where user.username = :username and user.password = :password")
+    List<User> isCorrectPassword(@Param("username") String username, @Param("password") String password);
+
+
+    @Modifying
+    @Transactional
+    @Query("Select user from User user where user.role != 'ADMIN'")
+    List<User> getAllUserAccount();
 }

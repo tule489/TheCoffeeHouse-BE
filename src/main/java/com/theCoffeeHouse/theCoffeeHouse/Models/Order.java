@@ -21,7 +21,6 @@ public class Order {
     private String month;
     private String year;
     private String time;
-    @Value("${status: Đang chuẩn bị đơn hàng}")
     private String status;
 
     public Order() {

@@ -9,8 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+
 
 @RestController
 @RequestMapping(path = "/api/v1/categories")
@@ -83,7 +86,7 @@ public class CategoryController {
         );
     }
 
-    @PutMapping("/deleteMultiple")
+    @PostMapping("/deleteMultiple")
     ResponseEntity<ResponseObject> deleteMultipleProduct(@RequestBody List<String> arrayId) {
         int count = 0;
         if (arrayId.size() < 0) {

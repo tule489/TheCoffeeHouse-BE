@@ -1,44 +1,80 @@
 package com.theCoffeeHouse.theCoffeeHouse.Service;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 import com.theCoffeeHouse.theCoffeeHouse.Models.OrderByDay;
+import com.theCoffeeHouse.theCoffeeHouse.Models.OrderByMonth;
+import com.theCoffeeHouse.theCoffeeHouse.Repositories.OrderRepository;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-public class ExportExcel {
-    private XSSFWorkbook workbook;
-    private XSSFSheet sheet;
-    private List<OrderByDay> listOrderByDay;
+import org.springframework.beans.factory.annotation.Autowired;
 
-    public ExportExcel(List<OrderByDay> listOrderByDays) {
-        this.listOrderByDay = listOrderByDays;
+public class ExportExcel {
+    private final XSSFWorkbook workbook;
+    private OrderRepository repository;
+
+    public ExportExcel(OrderRepository repository) {
+        this.repository = repository;
         workbook = new XSSFWorkbook();
     }
 
 
-    private void writeHeaderLine() {
-        sheet = workbook.createSheet("Doanh thu");
-
+    private void writeHeaderLine(XSSFSheet sheet, String month) {
         Row row = sheet.createRow(1);
 
         CellStyle style = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
+        font.setFontName("Times New Roman");
         font.setBold(true);
-        font.setFontHeight(16);
+        font.setFontHeight(13);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setFont(font);
 
-        createCell(sheet.createRow(0), 1, "Doanh thu tháng ", style);
-        createCell(row, 0, "Ngày", style);
-        createCell(row, 1, "Tổng tiền", style);
+        CellStyle styleForHeader = workbook.createCellStyle();
+        XSSFFont fontForHeader = workbook.createFont();
+        fontForHeader.setFontHeight(16);
+        fontForHeader.setFontName("Times New Roman");
+        fontForHeader.setBold(true);
+        styleForHeader.setFont(fontForHeader);
+
+        createCell(sheet.createRow(0), 0, "Báo cáo doanh thu tháng " + month, styleForHeader, sheet);
+        createCell(row, 0, "Ngày", style, sheet);
+        createCell(row, 1, "Tổng tiền", style, sheet);
     }
 
-    private void createCell(Row row, int columnCount, Object value, CellStyle style) {
+    private void writeHeaderLineForYear(XSSFSheet sheet) {
+        Row row = sheet.createRow(1);
+
+        CellStyle style = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setFontName("Times New Roman");
+        font.setBold(true);
+        font.setFontHeight(13);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setFont(font);
+
+        CellStyle styleForHeader = workbook.createCellStyle();
+        XSSFFont fontForHeader = workbook.createFont();
+        fontForHeader.setFontHeight(16);
+        fontForHeader.setFontName("Times New Roman");
+        fontForHeader.setBold(true);
+        styleForHeader.setFont(fontForHeader);
+
+        createCell(sheet.createRow(0), 0, "Báo cáo doanh thu năm " + LocalDate.now().getYear(), styleForHeader, sheet);
+        createCell(row, 0, "Tháng", style, sheet);
+        createCell(row, 1, "Tổng tiền", style, sheet);
+    }
+
+    private void createCell(Row row, int columnCount, Object value, CellStyle style, XSSFSheet sheet) {
         sheet.autoSizeColumn(columnCount);
         Cell cell = row.createCell(columnCount);
         if (value instanceof Integer) {
@@ -46,38 +82,85 @@ public class ExportExcel {
         } else if (value instanceof Boolean) {
             cell.setCellValue((Boolean) value);
         }else {
-            cell.setCellValue((String) value);
+            cell.setCellValue(String.valueOf(value));
         }
         cell.setCellStyle(style);
     }
 
-    private void writeDataLines() {
+    private void writeDataLines(XSSFSheet sheet, List<OrderByDay> listOrderByDay) {
         int rowCount = 2;
 
         CellStyle style = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
-        font.setFontHeight(14);
+        font.setFontHeight(13);
+        font.setBold(false);
+        font.setFontName("Times New Roman");
+
         style.setFont(font);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
 
         for (OrderByDay value : listOrderByDay) {
             Row row = sheet.createRow(rowCount++);
             int columnCount = 0;
 
-            createCell(row, columnCount++, value.getDay(), style);
-            createCell(row, columnCount++, value.getTotalMoney(), style);
+            createCell(row, columnCount++, value.getDay(), style, sheet);
+            createCell(row, columnCount++, value.getTotalMoney(), style, sheet);
+
+        }
+    }
+
+    private void writeDataLinesForYear(XSSFSheet sheet, List<OrderByMonth> listOrderByMonth) {
+        int rowCount = 2;
+
+        CellStyle style = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setFontHeight(13);
+        font.setBold(false);
+        font.setFontName("Times New Roman");
+
+        style.setFont(font);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
+
+        for (OrderByMonth value : listOrderByMonth) {
+            Row row = sheet.createRow(rowCount++);
+            int columnCount = 0;
+
+            createCell(row, columnCount++, value.getMonth(), style, sheet);
+            createCell(row, columnCount++, value.getTotalMoney(), style, sheet);
 
         }
     }
 
     public void export(HttpServletResponse response) throws IOException {
-        writeHeaderLine();
-        writeDataLines();
+        XSSFSheet sheetYear = workbook.createSheet("Doanh thu năm " + LocalDate.now().getYear());
+        writeHeaderLineForYear(sheetYear);
+        Object[] objectsOrderByMonth = repository.getOrderByMonth(String.valueOf(LocalDate.now().getYear()));
+        List<OrderByMonth> orderByMonths = Arrays.stream(objectsOrderByMonth).map(
+                data -> {
+                    Object[] arr = (Object[]) data;
+                    return new OrderByMonth((String) arr[0], ((BigDecimal) arr[1]).doubleValue());
+                }
+        ).toList();
+        writeDataLinesForYear(sheetYear, orderByMonths);
+        for(int i = 1; i <= LocalDate.now().getMonthValue(); i++) {
+            XSSFSheet sheet = workbook.createSheet("Tháng " + i);
+            writeHeaderLine(sheet, String.valueOf(i));
+            Object[] objects = repository.getOrderByDay(String.valueOf(i));
+            List<OrderByDay> orderByDays = Arrays.stream(objects).map(
+                    data -> {
+                        Object[] arr = (Object[]) data;
+                        return new OrderByDay((String) arr[0], ((BigDecimal) arr[1]).doubleValue());
+                    }
+            ).toList();
+            writeDataLines(sheet, orderByDays);
+        }
 
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         workbook.close();
 
         outputStream.close();
-
     }
 }

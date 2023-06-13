@@ -43,6 +43,7 @@ public class PaymentController {
             );
         }
         for (String productId : arrayProductId) {
+            count++;
             orderDetailsRepository.save(new OrderDetails(Long.parseLong(orderId), Long.parseLong(productId)));
         }
         if (count == arrayProductId.length) {
@@ -54,7 +55,7 @@ public class PaymentController {
         );
     }
 
-    @PutMapping("/deleteMultiple")
+    @PostMapping("/deleteMultiple")
     ResponseEntity<ResponseObject> deleteMultipleProduct(@RequestBody String[] arrayId) {
         int count = 0;
 
@@ -91,34 +92,6 @@ public class PaymentController {
         repository.updateStatus(newStatus.substring(1, newStatus.length() -1), orderId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("ok", "Update status successfully", "" )
-        );
-    }
-
-    @GetMapping("/getOrderByDay/{month}")
-    ResponseEntity<ResponseObject> getOrderByDay(@PathVariable String month) {
-        Object[] objects = repository.getOrderByDay(month);
-        List<OrderByDay> orderByDays = Arrays.stream(objects).map(
-                data -> {
-                    Object[] arr = (Object[]) data;
-                    return new OrderByDay((String) arr[0], ((BigDecimal) arr[1]).doubleValue());
-                }
-        ).toList();
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("ok", "Get data successfully", orderByDays)
-        );
-    }
-
-    @GetMapping("/getOrderByMonth/{year}")
-    ResponseEntity<ResponseObject> getOrderByMonth(@PathVariable String year) {
-        Object[] objects = repository.getOrderByMonth(year);
-        List<OrderByMonth> orderByMonths = Arrays.stream(objects).map(
-                data -> {
-                    Object[] arr = (Object[]) data;
-                    return new OrderByMonth((String) arr[0], ((BigDecimal) arr[1]).doubleValue());
-                }
-        ).toList();
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("ok", "Get data successfully", orderByMonths)
         );
     }
 }

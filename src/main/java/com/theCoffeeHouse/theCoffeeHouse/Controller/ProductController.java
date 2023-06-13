@@ -3,6 +3,7 @@ package com.theCoffeeHouse.theCoffeeHouse.Controller;
 import com.theCoffeeHouse.theCoffeeHouse.Models.Product;
 import com.theCoffeeHouse.theCoffeeHouse.Models.ResponseObject;
 import com.theCoffeeHouse.theCoffeeHouse.Repositories.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path = "/api/v1/products")
 @CrossOrigin
+@RequiredArgsConstructor
 public class ProductController {
     @Autowired
     private ProductRepository repository;
@@ -88,7 +90,7 @@ public class ProductController {
         );
     }
 
-    @PutMapping("/deleteMultiple")
+    @PostMapping("/deleteMultiple")
     ResponseEntity<ResponseObject> deleteMultipleProduct(@RequestBody String[] arrayId) {
         int count = 0;
 
